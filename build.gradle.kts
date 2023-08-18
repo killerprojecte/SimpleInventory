@@ -43,7 +43,6 @@ publishing {
             groupId = "dev.rgbmc"
             artifactId = "SimpleInventory"
             version = this.version + "-" + id()
-            artifact(tasks.jar)
         }
     }
 }
