@@ -1,0 +1,32 @@
+title: "&eSimpleInventory"
+mode: MENU
+layout:
+  - 'AAAAAAAAA'
+  - 'A   B   A'
+  - 'AAAAAAAAC'
+icons:
+  A:
+    material: BLACK_STAINED_GLASS_PANE
+    amount: 1
+    name: '&eBorder'
+    lore:
+      - '&7Created By SimpleInventory'
+    flags:
+      - 'HIDE_ENCHANTS'
+    unbreakable: false
+    enchantments:
+      - 'DURABILITY:1'
+    action: 'none'
+    interactive: false
+  B:
+    material: REDSTONE_BLOCK
+    amount: 1
+    name: '&eBUTTON'
+    lore:
+      - '&7Created By SimpleInventory'
+    unbreakable: false
+    action: 'button'
+  C:
+    material: AIR
+    close: 'give_back'
+    interactive: true
