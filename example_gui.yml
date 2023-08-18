@@ -8,6 +8,8 @@ icons:
   A:
     material: BLACK_STAINED_GLASS_PANE
     amount: 1
+    data: 0
+    model: 0
     name: '&eBorder'
     lore:
       - '&7Created By SimpleInventory'

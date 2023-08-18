@@ -281,6 +281,9 @@ public class SimpleInventory {
                 if (section.contains("amount")) {
                     itemBuilder.amount(section.getInt("amount"));
                 }
+                if (section.contains("data")) {
+                    itemBuilder.damage((short) section.getInt("data"));
+                }
                 if (section.contains("name")) {
                     itemBuilder.displayName(variableHandler.apply(section.getString("name")));
                 }

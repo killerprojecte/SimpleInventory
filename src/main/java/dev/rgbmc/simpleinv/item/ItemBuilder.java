@@ -18,6 +18,7 @@ public class ItemBuilder {
     private int amount = 1;
     private int customModelData = Integer.MIN_VALUE;
     private boolean unbreakable = false;
+    private short damage = 0;
 
     public ItemBuilder type(Material material) {
         this.material = material;
@@ -98,10 +99,18 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder damage(short damage) {
+        this.damage = damage;
+        return this;
+    }
+
     public ItemStack build() {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         item.setAmount(amount);
+        if (damage != 0) {
+            item.setDurability(damage);
+        }
         if (meta != null) {
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 meta.addEnchant(entry.getKey(), entry.getValue(), true);
