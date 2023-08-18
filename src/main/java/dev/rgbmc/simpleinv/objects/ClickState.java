@@ -1,5 +1,6 @@
 package dev.rgbmc.simpleinv.objects;
 
+import dev.rgbmc.simpleinv.SimpleInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
@@ -8,91 +9,93 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class ClickState {
-    private final ClickType clickType;
-    private final Player player;
-    private final int slot;
-    private final int rawSlot;
-    private final InventoryType.SlotType slotType;
-    private final InventoryType inventoryType;
-    private final Inventory inventory;
-    private final InventoryClickEvent event;
-    private final InventoryAction inventoryAction;
-    private ItemStack currentItem;
-    private ItemStack cursorItem;
-    public ClickState(InventoryClickEvent event) {
-        this.event = event;
-        clickType = event.getClick();
-        player = (Player) event.getWhoClicked();
-        slot = event.getSlot();
-        slotType = event.getSlotType();
-        inventoryType = event.getClickedInventory().getType();
-        inventory = event.getClickedInventory();
-        currentItem = event.getCurrentItem();
-        cursorItem = event.getCursor();
-        inventoryAction = event.getAction();
-        rawSlot = event.getRawSlot();
-    }
+public class ClickState extends State {
+  private final ClickType clickType;
+  private final Player player;
+  private final int slot;
+  private final int rawSlot;
+  private final InventoryType.SlotType slotType;
+  private final InventoryType inventoryType;
+  private final Inventory inventory;
+  private final InventoryClickEvent event;
+  private final InventoryAction inventoryAction;
+  private ItemStack currentItem;
+  private ItemStack cursorItem;
 
-    public InventoryType getInventoryType() {
-        return inventoryType;
-    }
+  public ClickState(InventoryClickEvent event, SimpleInventory parent) {
+    super(parent);
+    this.event = event;
+    clickType = event.getClick();
+    player = (Player) event.getWhoClicked();
+    slot = event.getSlot();
+    slotType = event.getSlotType();
+    inventoryType = event.getClickedInventory().getType();
+    inventory = event.getClickedInventory();
+    currentItem = event.getCurrentItem();
+    cursorItem = event.getCursor();
+    inventoryAction = event.getAction();
+    rawSlot = event.getRawSlot();
+  }
 
-    public ClickType getClickType() {
-        return clickType;
-    }
+  public InventoryType getInventoryType() {
+    return inventoryType;
+  }
 
-    public int getRawSlot() {
-        return rawSlot;
-    }
+  public ClickType getClickType() {
+    return clickType;
+  }
 
-    public int getSlot() {
-        return slot;
-    }
+  public int getRawSlot() {
+    return rawSlot;
+  }
 
-    public Inventory getInventory() {
-        return inventory;
-    }
+  public int getSlot() {
+    return slot;
+  }
 
-    public InventoryAction getInventoryAction() {
-        return inventoryAction;
-    }
+  public Inventory getInventory() {
+    return inventory;
+  }
 
-    public InventoryClickEvent getEvent() {
-        return event;
-    }
+  public InventoryAction getInventoryAction() {
+    return inventoryAction;
+  }
 
-    public ItemStack getCurrentItem() {
-        return currentItem;
-    }
+  public InventoryClickEvent getEvent() {
+    return event;
+  }
 
-    public void setCurrentItem(ItemStack item) {
-        this.currentItem = item;
-        event.setCurrentItem(item);
-    }
+  public ItemStack getCurrentItem() {
+    return currentItem;
+  }
 
-    public ItemStack getCursorItem() {
-        return cursorItem;
-    }
+  public void setCurrentItem(ItemStack item) {
+    this.currentItem = item;
+    event.setCurrentItem(item);
+  }
 
-    public void setCursorItem(ItemStack item) {
-        this.cursorItem = item;
-        event.setCursor(item);
-    }
+  public ItemStack getCursorItem() {
+    return cursorItem;
+  }
 
-    public Player getPlayer() {
-        return player;
-    }
+  public void setCursorItem(ItemStack item) {
+    this.cursorItem = item;
+    event.setCursor(item);
+  }
 
-    public InventoryType.SlotType getSlotType() {
-        return slotType;
-    }
+  public Player getPlayer() {
+    return player;
+  }
 
-    public boolean isCancelled() {
-        return event.isCancelled();
-    }
+  public InventoryType.SlotType getSlotType() {
+    return slotType;
+  }
 
-    public void setCancelled(boolean status) {
-        event.setCancelled(status);
-    }
+  public boolean isCancelled() {
+    return event.isCancelled();
+  }
+
+  public void setCancelled(boolean status) {
+    event.setCancelled(status);
+  }
 }

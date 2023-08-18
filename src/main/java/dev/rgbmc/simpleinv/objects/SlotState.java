@@ -1,27 +1,30 @@
 package dev.rgbmc.simpleinv.objects;
 
+import dev.rgbmc.simpleinv.SimpleInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class SlotState {
-    private final Player player;
-    private final ItemStack item;
-    private final int slot;
-    public SlotState(Player player, ItemStack item, int slot) {
-        this.player = player;
-        this.item = item;
-        this.slot = slot;
-    }
+public class SlotState extends State {
+  private final Player player;
+  private final ItemStack item;
+  private final int slot;
 
-    public int getSlot() {
-        return slot;
-    }
+  public SlotState(Player player, ItemStack item, int slot, SimpleInventory parent) {
+    super(parent);
+    this.player = player;
+    this.item = item;
+    this.slot = slot;
+  }
 
-    public Player getPlayer() {
-        return player;
-    }
+  public int getSlot() {
+    return slot;
+  }
 
-    public ItemStack getItem() {
-        return item;
-    }
+  public Player getPlayer() {
+    return player;
+  }
+
+  public ItemStack getItem() {
+    return item;
+  }
 }

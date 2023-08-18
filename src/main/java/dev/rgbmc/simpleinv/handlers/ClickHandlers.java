@@ -5,42 +5,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClickHandlers {
-    private final List<ClickHandler> handlers;
+  private final List<ClickHandler> handlers;
 
-    public ClickHandlers() {
-        this(new ArrayList<>());
-    }
-    public ClickHandlers(List<ClickHandler> handlers) {
-        this.handlers = handlers;
-    }
+  public ClickHandlers() {
+    this(new ArrayList<>());
+  }
 
-    public void call(ClickState clickState) {
-        for (ClickHandler handler : handlers) {
-            handler.call(clickState);
-        }
-    }
+  public ClickHandlers(List<ClickHandler> handlers) {
+    this.handlers = handlers;
+  }
 
-    public void clear() {
-        handlers.clear();
+  public void call(ClickState clickState) {
+    for (ClickHandler handler : handlers) {
+      handler.call(clickState);
     }
+  }
 
-    public void add(ClickHandler clickHandler) {
-        handlers.add(clickHandler);
-    }
+  public void clear() {
+    handlers.clear();
+  }
 
-    public void addHandlers(List<ClickHandler> handlers) {
-        this.handlers.addAll(handlers);
-    }
+  public void add(ClickHandler clickHandler) {
+    handlers.add(clickHandler);
+  }
 
-    public void addHandlers(ClickHandlers handlers) {
-        this.handlers.addAll(handlers.getHandlers());
-    }
+  public void addHandlers(List<ClickHandler> handlers) {
+    this.handlers.addAll(handlers);
+  }
 
-    public List<ClickHandler> getHandlers() {
-        return new ArrayList<>(handlers);
-    }
+  public void addHandlers(ClickHandlers handlers) {
+    this.handlers.addAll(handlers.getHandlers());
+  }
 
-    public void remove(ClickHandler handler) {
-        handlers.remove(handler);
-    }
+  public List<ClickHandler> getHandlers() {
+    return new ArrayList<>(handlers);
+  }
+
+  public void remove(ClickHandler handler) {
+    handlers.remove(handler);
+  }
 }
