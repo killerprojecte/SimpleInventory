@@ -185,6 +185,10 @@ public class SimpleInventory {
         return allowsSlot.contains(slot);
     }
 
+    public List<Integer> getInteractiveSlots() {
+        return allowsSlot;
+    }
+
     public void clickSlot(int slot, ClickState clickState) {
         if (handlersMap.containsKey(slot)) {
             handlersMap.get(slot).call(clickState);
