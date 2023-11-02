@@ -1,7 +1,6 @@
 package dev.rgbmc.simpleinv.handlers;
 
 import dev.rgbmc.simpleinv.objects.SlotState;
-
 import java.util.function.Consumer;
 
 public class CloseSlotHandler {

@@ -7,20 +7,16 @@ import dev.rgbmc.simpleinv.handlers.CloseSlotHandler;
 import dev.rgbmc.simpleinv.holders.SimpleInventoryHolder;
 import dev.rgbmc.simpleinv.item.ItemBuilder;
 import dev.rgbmc.simpleinv.listeners.SimpleInventoryListener;
-import dev.rgbmc.simpleinv.objects.ClickState;
-import dev.rgbmc.simpleinv.objects.CloseState;
-import dev.rgbmc.simpleinv.objects.InventoryMode;
-import dev.rgbmc.simpleinv.objects.SlotState;
+import dev.rgbmc.simpleinv.objects.*;
 import dev.rgbmc.simpleinv.utils.Color;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -33,6 +29,7 @@ public class SimpleInventory {
   private final Map<Integer, ItemStack> itemMap = new HashMap<>();
   private final List<Integer> allowsSlot = new ArrayList<>();
   private final List<CloseHandler> closeHandlers = new ArrayList<>();
+  private final List<Integer> undefined_slots = new ArrayList<>();
   private InventoryType inventoryType;
   private String title;
   private InventoryMode mode = InventoryMode.NORMAL;
@@ -265,35 +262,42 @@ public class SimpleInventory {
     return this;
   }
 
+  public List<Integer> getUndefinedIcons() {
+    return undefined_slots;
+  }
+
+  public SimpleInventory setUndefinedIcons(List<Integer> undefined_slots) {
+    this.undefined_slots.clear();
+    this.undefined_slots.addAll(undefined_slots);
+    return this;
+  }
+
   public static class InventoryParser {
-    public static SimpleInventory deserialize(
+    public static InventoryBuilder deserialize(
         FileConfiguration configuration,
         Map<String, ClickHandlers> clickHandlers,
         CloseHandler closeHandler,
         Map<String, CloseSlotHandler> closeSlotHandlers) {
       return deserialize(
-          configuration, clickHandlers, closeHandler, closeSlotHandlers, string -> string);
+          configuration, clickHandlers, closeHandler, closeSlotHandlers, variableInfo -> variableInfo.getOrigin());
     }
 
-    public static SimpleInventory deserialize(
+    public static InventoryBuilder deserialize(
         FileConfiguration configuration,
         Map<String, ClickHandlers> clickHandlers,
         CloseHandler closeHandler,
         Map<String, CloseSlotHandler> closeSlotHandlers,
-        Function<String, String> variableHandler) {
+        Function<VariableInfo, String> variableHandler) {
       List<String> layouts = configuration.getStringList("layout");
-      SimpleInventory inventory =
-          new SimpleInventory(
-              variableHandler.apply(configuration.getString("title")), layouts.size() * 9);
-      inventory.setMode(InventoryMode.valueOf(configuration.getString("mode").toUpperCase()));
-      inventory.addCloseHandler(closeHandler);
       Map<String, ItemBuilder> icons = new HashMap<>();
       Map<String, ClickHandlers> icon_actions = new HashMap<>();
       Map<String, CloseSlotHandler> icons_close = new HashMap<>();
       List<String> interactive_slots = new ArrayList<>();
+      List<String> undefined_slots = new ArrayList<>();
       for (String key : configuration.getConfigurationSection("icons").getKeys(false)) {
         ConfigurationSection section = configuration.getConfigurationSection("icons." + key);
         ItemBuilder itemBuilder = new ItemBuilder();
+        itemBuilder.slotName(key);
         itemBuilder.type(Material.getMaterial(section.getString("material").toUpperCase()));
         itemBuilder.displayName("");
         if (section.contains("amount")) {
@@ -303,13 +307,10 @@ public class SimpleInventory {
           itemBuilder.damage((short) section.getInt("data"));
         }
         if (section.contains("name")) {
-          itemBuilder.displayName(variableHandler.apply(section.getString("name")));
+          itemBuilder.displayName(section.getString("name"));
         }
         if (section.contains("lore")) {
-          itemBuilder.lore(
-              section.getStringList("lore").stream()
-                  .map(variableHandler)
-                  .collect(Collectors.toList()));
+          itemBuilder.lore(section.getStringList("lore"));
         }
         if (section.contains("flags")) {
           for (String flag : section.getStringList("flags")) {
@@ -342,7 +343,45 @@ public class SimpleInventory {
         if (section.contains("close") && !section.getString("close").equalsIgnoreCase("none")) {
           icons_close.put(key, closeSlotHandlers.get(section.getString("close")));
         }
+        if (section.contains("undefined") && section.getBoolean("undefined")) {
+          undefined_slots.add(key);
+        }
       }
+      return new InventoryBuilder(icons, icon_actions, icons_close, interactive_slots, layouts, InventoryMode.valueOf(configuration.getString("mode").toUpperCase()), closeHandler, configuration.getString("title"), variableHandler, undefined_slots);
+    }
+  }
+
+  public static class InventoryBuilder {
+    private final Map<String, ItemBuilder> icons;
+    private final Map<String, ClickHandlers> icon_actions;
+    private final Map<String, CloseSlotHandler> icons_close;
+    private final List<String> interactive_slots;
+    private final List<String> layouts;
+    private final List<String> undefined_slots;
+    private final InventoryMode mode;
+    private final CloseHandler closeHandler;
+    private final String title;
+    private final Function<VariableInfo, String> variableHandler;
+
+    public InventoryBuilder(Map<String, ItemBuilder> icons, Map<String, ClickHandlers> icon_actions, Map<String, CloseSlotHandler> icons_close, List<String> interactive_slots, List<String> layouts, InventoryMode mode, CloseHandler closeHandler, String title, Function<VariableInfo, String> variableHandler, List<String> undefined_slots) {
+      this.icons = icons;
+      this.icon_actions = icon_actions;
+      this.icons_close = icons_close;
+      this.interactive_slots = interactive_slots;
+      this.layouts = layouts;
+      this.mode = mode;
+      this.closeHandler = closeHandler;
+      this.title = title;
+      this.variableHandler = variableHandler;
+      this.undefined_slots = undefined_slots;
+    }
+
+    public SimpleInventory builder(Player player) {
+      SimpleInventory inventory =
+          new SimpleInventory(variableHandler.apply(new VariableInfo(title, player)), layouts.size() * 9);
+      inventory.setMode(mode);
+      inventory.addCloseHandler(closeHandler);
+      List<Integer> undefinedSlots = new ArrayList<>();
       for (int r = 0; r < layouts.size(); r++) {
         String layout_str = layouts.get(r);
         char[] keys = layout_str.toCharArray();
@@ -351,7 +390,10 @@ public class SimpleInventory {
           String key = String.valueOf(keys[i]);
           if (icons.containsKey(key)) {
             int slot = (r * 9) + i;
-            inventory.addItem(slot, icons.get(key).build());
+            inventory.addItem(slot, icons.get(key).build(player));
+            if (undefined_slots.contains(key)) {
+              undefinedSlots.add(slot);
+            }
             if (icon_actions.containsKey(key)) {
               inventory.bindSlot(slot, icon_actions.get(key));
             }
@@ -364,6 +406,7 @@ public class SimpleInventory {
           }
         }
       }
+      inventory.setUndefinedIcons(undefinedSlots);
       return inventory;
     }
   }

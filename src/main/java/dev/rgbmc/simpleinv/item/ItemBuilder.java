@@ -1,10 +1,13 @@
 package dev.rgbmc.simpleinv.item;
 
+import dev.rgbmc.simpleinv.objects.VariableInfo;
 import dev.rgbmc.simpleinv.utils.Color;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,6 +22,13 @@ public class ItemBuilder {
   private int customModelData = Integer.MIN_VALUE;
   private boolean unbreakable = false;
   private short damage = 0;
+  private ItemStack itemStack = null;
+  private String slotName = "UNKNOWN";
+
+  public ItemBuilder slotName(String slotName) {
+    this.slotName = slotName;
+    return this;
+  }
 
   public ItemBuilder type(Material material) {
     this.material = material;
@@ -104,7 +114,17 @@ public class ItemBuilder {
     return this;
   }
 
-  public ItemStack build() {
+  public ItemBuilder itemStack(ItemStack itemStack) {
+    this.itemStack = itemStack;
+    return this;
+  }
+
+  public ItemStack build(Player player) {
+    return build(player, VariableInfo::getOrigin);
+  }
+
+  public ItemStack build(Player player, Function<VariableInfo, String> variableHandler) {
+    if (itemStack != null) return itemStack;
     ItemStack item = new ItemStack(material);
     ItemMeta meta = item.getItemMeta();
     item.setAmount(amount);
@@ -115,15 +135,23 @@ public class ItemBuilder {
       for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
         meta.addEnchant(entry.getKey(), entry.getValue(), true);
       }
-      meta.setDisplayName(Color.color(displayName));
+      meta.setDisplayName(Color.color(variableHandler.apply(new VariableInfo(displayName, player))));
       if (customModelData != Integer.MIN_VALUE) {
         meta.setCustomModelData(customModelData);
       }
-      meta.setLore(lore.stream().map(Color::color).collect(Collectors.toList()));
+      meta.setLore(
+          lore.stream()
+              .map(string -> variableHandler.apply(new VariableInfo(string, player)))
+              .map(Color::color)
+              .collect(Collectors.toList()));
       meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
       meta.setUnbreakable(unbreakable);
       item.setItemMeta(meta);
     }
     return item;
+  }
+
+  public String getSlotName() {
+    return slotName;
   }
 }
