@@ -276,6 +276,51 @@ public class SimpleInventory {
         return this;
     }
 
+    public static class ItemParser {
+        public static ItemBuilder parseItem(ConfigurationSection section) {
+            ItemBuilder itemBuilder = new ItemBuilder();
+            itemBuilder.type(Material.getMaterial(section.getString("material").toUpperCase()));
+            itemBuilder.displayName("");
+            if (section.contains("amount")) {
+                itemBuilder.amount(section.getInt("amount"));
+            }
+            if (section.contains("data")) {
+                itemBuilder.damage((short) section.getInt("data"));
+            }
+            if (section.contains("name")) {
+                itemBuilder.displayName(section.getString("name"));
+            }
+            if (section.contains("lore")) {
+                itemBuilder.lore(section.getStringList("lore"));
+            }
+            if (section.contains("flags")) {
+                for (String flag : section.getStringList("flags")) {
+                    itemBuilder.flag(ItemFlag.valueOf(flag.toUpperCase()));
+                }
+            }
+            if (section.contains("unbreakable")) {
+                if (section.getBoolean("unbreakable")) {
+                    itemBuilder.unbreakable();
+                } else {
+                    itemBuilder.breakable();
+                }
+            }
+            if (section.contains("enchantments")) {
+                for (String s : section.getStringList("enchantments")) {
+                    String[] split = s.split(":");
+                    itemBuilder.enchantment(Enchantment.getByName(split[0]), Integer.parseInt(split[1]));
+                }
+            }
+            if (section.contains("model")) {
+                itemBuilder.customModelData(section.getInt("model"));
+            }
+            if (section.contains("texture")) {
+                itemBuilder.skullTexture(section.getString("texture"));
+            }
+            return itemBuilder;
+        }
+    }
+
     public static class InventoryParser {
         public static InventoryBuilder deserialize(
                 FileConfiguration configuration,
@@ -296,48 +341,12 @@ public class SimpleInventory {
             Map<String, ItemBuilder> icons = new HashMap<>();
             Map<String, ClickHandlers> icon_actions = new HashMap<>();
             Map<String, CloseSlotHandler> icons_close = new HashMap<>();
-            Map<String, String> icons_skullTextures = new HashMap<>();
             List<String> interactive_slots = new ArrayList<>();
             List<String> undefined_slots = new ArrayList<>();
             for (String key : configuration.getConfigurationSection("icons").getKeys(false)) {
                 ConfigurationSection section = configuration.getConfigurationSection("icons." + key);
-                ItemBuilder itemBuilder = new ItemBuilder();
+                ItemBuilder itemBuilder = ItemParser.parseItem(section);
                 itemBuilder.slotName(key);
-                itemBuilder.type(Material.getMaterial(section.getString("material").toUpperCase()));
-                itemBuilder.displayName("");
-                if (section.contains("amount")) {
-                    itemBuilder.amount(section.getInt("amount"));
-                }
-                if (section.contains("data")) {
-                    itemBuilder.damage((short) section.getInt("data"));
-                }
-                if (section.contains("name")) {
-                    itemBuilder.displayName(section.getString("name"));
-                }
-                if (section.contains("lore")) {
-                    itemBuilder.lore(section.getStringList("lore"));
-                }
-                if (section.contains("flags")) {
-                    for (String flag : section.getStringList("flags")) {
-                        itemBuilder.flag(ItemFlag.valueOf(flag.toUpperCase()));
-                    }
-                }
-                if (section.contains("unbreakable")) {
-                    if (section.getBoolean("unbreakable")) {
-                        itemBuilder.unbreakable();
-                    } else {
-                        itemBuilder.breakable();
-                    }
-                }
-                if (section.contains("enchantments")) {
-                    for (String s : section.getStringList("enchantments")) {
-                        String[] split = s.split(":");
-                        itemBuilder.enchantment(Enchantment.getByName(split[0]), Integer.parseInt(split[1]));
-                    }
-                }
-                if (section.contains("model")) {
-                    itemBuilder.customModelData(section.getInt("model"));
-                }
                 if (section.contains("interactive") && section.getBoolean("interactive")) {
                     interactive_slots.add(key);
                 }
@@ -351,11 +360,8 @@ public class SimpleInventory {
                 if (section.contains("undefined") && section.getBoolean("undefined")) {
                     undefined_slots.add(key);
                 }
-                if (section.contains("texture")) {
-                    icons_skullTextures.put(key, section.getString("texture"));
-                }
             }
-            return new InventoryBuilder(icons, icon_actions, icons_close, interactive_slots, layouts, InventoryMode.valueOf(configuration.getString("mode").toUpperCase()), closeHandler, configuration.getString("title"), variableHandler, undefined_slots, icons_skullTextures);
+            return new InventoryBuilder(icons, icon_actions, icons_close, interactive_slots, layouts, InventoryMode.valueOf(configuration.getString("mode").toUpperCase()), closeHandler, configuration.getString("title"), variableHandler, undefined_slots);
         }
     }
 
@@ -368,7 +374,7 @@ public class SimpleInventory {
         private final Function<VariableInfo, String> variableHandler;
         private final Map<Integer, PackedLayout> mappedLayout = new HashMap<>();
 
-        public InventoryBuilder(Map<String, ItemBuilder> icons, Map<String, ClickHandlers> icon_actions, Map<String, CloseSlotHandler> icons_close, List<String> interactive_slots, List<String> layouts, InventoryMode mode, CloseHandler closeHandler, String title, Function<VariableInfo, String> variableHandler, List<String> undefined_slots, Map<String, String> icons_skullTextures) {
+        public InventoryBuilder(Map<String, ItemBuilder> icons, Map<String, ClickHandlers> icon_actions, Map<String, CloseSlotHandler> icons_close, List<String> interactive_slots, List<String> layouts, InventoryMode mode, CloseHandler closeHandler, String title, Function<VariableInfo, String> variableHandler, List<String> undefined_slots) {
             this.icons = icons;
             this.layouts = layouts;
             this.mode = mode;
@@ -387,7 +393,6 @@ public class SimpleInventory {
                         boolean interactive = false;
                         ClickHandlers clickHandlers = null;
                         CloseSlotHandler closeSlotHandler = null;
-                        String skullTexture = null;
                         if (undefined_slots.contains(key)) {
                             undefined = true;
                         }
@@ -400,10 +405,7 @@ public class SimpleInventory {
                         if (icons_close.containsKey(key)) {
                             closeSlotHandler = icons_close.get(key);
                         }
-                        if (icons_skullTextures.containsKey(key)) {
-                            skullTexture = icons_skullTextures.get(key);
-                        }
-                        mappedLayout.put(slot, new PackedLayout(icons.get(key), clickHandlers, closeSlotHandler, interactive, undefined, skullTexture));
+                        mappedLayout.put(slot, new PackedLayout(icons.get(key), clickHandlers, closeSlotHandler, interactive, undefined));
                     }
                 }
             }

@@ -10,15 +10,13 @@ public class PackedLayout {
     private final CloseSlotHandler closeSlotHandler;
     private final boolean interactive;
     private final boolean undefined;
-    private final String skullTexture;
 
-    public PackedLayout(ItemBuilder itemBuilder, ClickHandlers clickHandlers, CloseSlotHandler closeSlotHandler, boolean interactive, boolean undefined, String skullTexture) {
+    public PackedLayout(ItemBuilder itemBuilder, ClickHandlers clickHandlers, CloseSlotHandler closeSlotHandler, boolean interactive, boolean undefined) {
         this.itemBuilder = itemBuilder;
         this.clickHandlers = clickHandlers;
         this.closeSlotHandler = closeSlotHandler;
         this.interactive = interactive;
         this.undefined = undefined;
-        this.skullTexture = skullTexture;
     }
 
     public ClickHandlers getClickHandlers() {
@@ -39,9 +37,5 @@ public class PackedLayout {
 
     public boolean isUndefined() {
         return undefined;
-    }
-
-    public String getSkullTexture() {
-        return skullTexture;
     }
 }
