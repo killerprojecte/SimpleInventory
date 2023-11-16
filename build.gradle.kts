@@ -21,6 +21,7 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT")
+    implementation("com.github.cryptomorin:XSeries:9.7.0")
 }
 
 tasks.compileJava {

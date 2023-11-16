@@ -6,18 +6,18 @@ import org.bukkit.inventory.InventoryHolder;
 
 public class SimpleInventoryHolder implements InventoryHolder {
 
-  private final SimpleInventory parent;
+    private final SimpleInventory parent;
 
-  public SimpleInventoryHolder(SimpleInventory parent) {
-    this.parent = parent;
-  }
+    public SimpleInventoryHolder(SimpleInventory parent) {
+        this.parent = parent;
+    }
 
-  @Override
-  public Inventory getInventory() {
-    return parent.build();
-  }
+    @Override
+    public Inventory getInventory() {
+        return parent.build();
+    }
 
-  public SimpleInventory getParent() {
-    return parent;
-  }
+    public SimpleInventory getParent() {
+        return parent;
+    }
 }

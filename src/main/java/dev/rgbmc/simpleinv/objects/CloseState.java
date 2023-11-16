@@ -7,32 +7,32 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.PlayerInventory;
 
 public class CloseState extends State {
-  private final Inventory inventory;
-  private final PlayerInventory playerInventory;
-  private final Player player;
-  private final InventoryCloseEvent event;
+    private final Inventory inventory;
+    private final PlayerInventory playerInventory;
+    private final Player player;
+    private final InventoryCloseEvent event;
 
-  public CloseState(InventoryCloseEvent event, SimpleInventory parent) {
-    super(parent);
-    this.event = event;
-    inventory = event.getInventory();
-    player = (Player) event.getPlayer();
-    playerInventory = player.getInventory();
-  }
+    public CloseState(InventoryCloseEvent event, SimpleInventory parent) {
+        super(parent);
+        this.event = event;
+        inventory = event.getInventory();
+        player = (Player) event.getPlayer();
+        playerInventory = player.getInventory();
+    }
 
-  public Player getPlayer() {
-    return player;
-  }
+    public Player getPlayer() {
+        return player;
+    }
 
-  public Inventory getInventory() {
-    return inventory;
-  }
+    public Inventory getInventory() {
+        return inventory;
+    }
 
-  public InventoryCloseEvent getEvent() {
-    return event;
-  }
+    public InventoryCloseEvent getEvent() {
+        return event;
+    }
 
-  public PlayerInventory getPlayerInventory() {
-    return playerInventory;
-  }
+    public PlayerInventory getPlayerInventory() {
+        return playerInventory;
+    }
 }
