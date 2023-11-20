@@ -158,7 +158,7 @@ public class ItemBuilder {
             meta.setUnbreakable(unbreakable);
             item.setItemMeta(meta);
             if (skullTexture != null) {
-                item = SkullBuilder.applySkin(itemStack, skullTexture);
+                item = SkullBuilder.applySkin(item, skullTexture);
             }
         }
         return item;
