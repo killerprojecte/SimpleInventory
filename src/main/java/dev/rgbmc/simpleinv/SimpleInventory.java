@@ -279,7 +279,7 @@ public class SimpleInventory {
     public static class ItemParser {
         public static ItemBuilder parseItem(ConfigurationSection section) {
             ItemBuilder itemBuilder = new ItemBuilder();
-            itemBuilder.type(Material.getMaterial(section.getString("material").toUpperCase()));
+            itemBuilder.type(Material.getMaterial(section.getString("material", "AIR").toUpperCase()));
             itemBuilder.displayName("");
             if (section.contains("amount")) {
                 itemBuilder.amount(section.getInt("amount"));
