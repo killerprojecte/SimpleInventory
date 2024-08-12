@@ -32,6 +32,7 @@ public class SimpleInventory {
     private final Map<Integer, CloseSlotHandler> closeSlotHandlers = new HashMap<>();
     private final Map<Integer, ItemStack> itemMap = new HashMap<>();
     private final List<Integer> allowsSlot = new ArrayList<>();
+    private final Map<Integer, InteractiveSlotInfo> interactiveSlotMap = new HashMap<>();
     private final List<CloseHandler> closeHandlers = new ArrayList<>();
     private final List<Integer> undefined_slots = new ArrayList<>();
     private InventoryType inventoryType;
@@ -184,11 +185,11 @@ public class SimpleInventory {
     }
 
     public boolean isAllow(int slot) {
-        return allowsSlot.contains(slot);
+        return allowsSlot.contains(slot) || interactiveSlotMap.containsKey(slot);
     }
 
-    public List<Integer> getInteractiveSlots() {
-        return allowsSlot;
+    public Map<Integer, InteractiveSlotInfo> getInteractiveSlots() {
+        return interactiveSlotMap;
     }
 
     public void clickSlot(int slot, ClickState clickState) {
@@ -341,6 +342,7 @@ public class SimpleInventory {
             Map<String, ItemBuilder> icons = new HashMap<>();
             Map<String, ClickHandlers> icon_actions = new HashMap<>();
             Map<String, CloseSlotHandler> icons_close = new HashMap<>();
+            Map<String, String> identifiers = new HashMap<>();
             List<String> interactive_slots = new ArrayList<>();
             List<String> undefined_slots = new ArrayList<>();
             for (String key : configuration.getConfigurationSection("icons").getKeys(false)) {
@@ -360,8 +362,9 @@ public class SimpleInventory {
                 if (section.contains("undefined") && section.getBoolean("undefined")) {
                     undefined_slots.add(key);
                 }
+                identifiers.put(key, section.getString("identifier", ""));
             }
-            return new InventoryBuilder(icons, icon_actions, icons_close, interactive_slots, layouts, InventoryMode.valueOf(configuration.getString("mode").toUpperCase()), closeHandler, configuration.getString("title"), variableHandler, undefined_slots);
+            return new InventoryBuilder(icons, icon_actions, icons_close, interactive_slots, layouts, InventoryMode.valueOf(configuration.getString("mode").toUpperCase()), closeHandler, configuration.getString("title"), variableHandler, undefined_slots, identifiers);
         }
     }
 
@@ -374,7 +377,7 @@ public class SimpleInventory {
         private final Function<VariableInfo, String> variableHandler;
         private final Map<Integer, PackedLayout> mappedLayout = new HashMap<>();
 
-        public InventoryBuilder(Map<String, ItemBuilder> icons, Map<String, ClickHandlers> icon_actions, Map<String, CloseSlotHandler> icons_close, List<String> interactive_slots, List<String> layouts, InventoryMode mode, CloseHandler closeHandler, String title, Function<VariableInfo, String> variableHandler, List<String> undefined_slots) {
+        public InventoryBuilder(Map<String, ItemBuilder> icons, Map<String, ClickHandlers> icon_actions, Map<String, CloseSlotHandler> icons_close, List<String> interactive_slots, List<String> layouts, InventoryMode mode, CloseHandler closeHandler, String title, Function<VariableInfo, String> variableHandler, List<String> undefined_slots, Map<String, String> identifiers) {
             this.icons = icons;
             this.layouts = layouts;
             this.mode = mode;
@@ -405,7 +408,7 @@ public class SimpleInventory {
                         if (icons_close.containsKey(key)) {
                             closeSlotHandler = icons_close.get(key);
                         }
-                        mappedLayout.put(slot, new PackedLayout(icons.get(key), clickHandlers, closeSlotHandler, interactive, undefined));
+                        mappedLayout.put(slot, new PackedLayout(icons.get(key), clickHandlers, closeSlotHandler, interactive, undefined, key, identifiers.get(key)));
                     }
                 }
             }
@@ -425,7 +428,7 @@ public class SimpleInventory {
                     undefinedSlots.add(slot);
                 }
                 if (layout.isInteractive()) {
-                    inventory.allowSlot(slot);
+                    inventory.interactiveSlotMap.put(slot, new InteractiveSlotInfo(layout.getId(), layout.getIdentify(), slot));
                 }
                 if (layout.getClickHandlers() != null) {
                     inventory.bindSlot(slot, layout.getClickHandlers());

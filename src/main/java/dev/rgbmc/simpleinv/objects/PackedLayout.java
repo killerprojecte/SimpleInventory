@@ -10,13 +10,17 @@ public class PackedLayout {
     private final CloseSlotHandler closeSlotHandler;
     private final boolean interactive;
     private final boolean undefined;
+    private final String id;
+    private final String identify;
 
-    public PackedLayout(ItemBuilder itemBuilder, ClickHandlers clickHandlers, CloseSlotHandler closeSlotHandler, boolean interactive, boolean undefined) {
+    public PackedLayout(ItemBuilder itemBuilder, ClickHandlers clickHandlers, CloseSlotHandler closeSlotHandler, boolean interactive, boolean undefined, String id, String identify) {
         this.itemBuilder = itemBuilder;
         this.clickHandlers = clickHandlers;
         this.closeSlotHandler = closeSlotHandler;
         this.interactive = interactive;
         this.undefined = undefined;
+        this.id = id;
+        this.identify = identify;
     }
 
     public ClickHandlers getClickHandlers() {
@@ -37,5 +41,13 @@ public class PackedLayout {
 
     public boolean isUndefined() {
         return undefined;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getIdentify() {
+        return identify;
     }
 }
