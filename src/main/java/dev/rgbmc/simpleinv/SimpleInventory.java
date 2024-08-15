@@ -452,5 +452,9 @@ public class SimpleInventory {
         public ItemBuilder getIcon(String key) {
             return icons.get(key);
         }
+
+        public Map<Integer, PackedLayout> getMappedLayout() {
+            return mappedLayout;
+        }
     }
 }
