@@ -145,7 +145,9 @@ public class ItemBuilder {
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 meta.addEnchant(entry.getKey(), entry.getValue(), true);
             }
-            meta.setDisplayName(Color.color(variableHandler.apply(new VariableInfo(displayName, player))));
+            if (displayName != null) {
+                meta.setDisplayName(Color.color(variableHandler.apply(new VariableInfo(displayName, player))));
+            }
             if (customModelData != Integer.MIN_VALUE) {
                 meta.setCustomModelData(customModelData);
             }
