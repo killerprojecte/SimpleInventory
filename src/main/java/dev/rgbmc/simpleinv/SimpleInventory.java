@@ -1,5 +1,6 @@
 package dev.rgbmc.simpleinv;
 
+import com.cryptomorin.xseries.XItemFlag;
 import dev.rgbmc.simpleinv.handlers.ClickHandler;
 import dev.rgbmc.simpleinv.handlers.ClickHandlers;
 import dev.rgbmc.simpleinv.handlers.CloseHandler;
@@ -9,6 +10,7 @@ import dev.rgbmc.simpleinv.item.ItemBuilder;
 import dev.rgbmc.simpleinv.listeners.SimpleInventoryListener;
 import dev.rgbmc.simpleinv.objects.*;
 import dev.rgbmc.simpleinv.utils.Color;
+import dev.rgbmc.simpleinv.utils.VersionChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -294,9 +296,9 @@ public class SimpleInventory {
             if (section.contains("lore")) {
                 itemBuilder.lore(section.getStringList("lore"));
             }
-            if (section.contains("flags")) {
+            if (section.contains("flags") && VersionChecker.atLeast("1.8")) {
                 for (String flag : section.getStringList("flags")) {
-                    itemBuilder.flag(ItemFlag.valueOf(flag.toUpperCase()));
+                    itemBuilder.flag(XItemFlag.valueOf(flag.toUpperCase()));
                 }
             }
             if (section.contains("unbreakable")) {

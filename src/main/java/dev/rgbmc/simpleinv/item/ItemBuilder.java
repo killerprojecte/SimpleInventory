@@ -1,7 +1,9 @@
 package dev.rgbmc.simpleinv.item;
 
+import com.cryptomorin.xseries.XItemFlag;
 import dev.rgbmc.simpleinv.objects.VariableInfo;
 import dev.rgbmc.simpleinv.utils.Color;
+import dev.rgbmc.simpleinv.utils.VersionChecker;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 public class ItemBuilder {
     private final List<String> lore = new ArrayList<>();
     private final Map<Enchantment, Integer> enchantments = new HashMap<>();
-    private final List<ItemFlag> itemFlags = new ArrayList<>();
+    private final List<XItemFlag> itemFlags = new ArrayList<>();
     private Material material = Material.AIR;
     private String displayName = "&eCreated By SimpleInventory#ItemBuilder";
     private int amount = 1;
@@ -89,7 +91,7 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder flag(ItemFlag itemFlag) {
+    public ItemBuilder flag(XItemFlag itemFlag) {
         itemFlags.add(itemFlag);
         return this;
     }
@@ -156,7 +158,9 @@ public class ItemBuilder {
                             .map(string -> variableHandler.apply(new VariableInfo(string, player)))
                             .map(Color::color)
                             .collect(Collectors.toList()));
-            meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
+            if (VersionChecker.atLeast("1.8")) {
+                meta.addItemFlags(itemFlags.stream().map(XItemFlag::get).toArray(ItemFlag[]::new));
+            }
             meta.setUnbreakable(unbreakable);
             item.setItemMeta(meta);
             if (skullTexture != null) {
