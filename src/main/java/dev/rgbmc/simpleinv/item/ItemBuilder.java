@@ -150,7 +150,7 @@ public class ItemBuilder {
             if (displayName != null) {
                 meta.setDisplayName(Color.color(variableHandler.apply(new VariableInfo(displayName, player))));
             }
-            if (customModelData != Integer.MIN_VALUE) {
+            if (customModelData != Integer.MIN_VALUE && VersionChecker.getInstance().atLeast("1_14_R1")) {
                 meta.setCustomModelData(customModelData);
             }
             meta.setLore(
@@ -161,7 +161,9 @@ public class ItemBuilder {
             if (VersionChecker.getInstance().atLeast("1_8_R1")) {
                 meta.addItemFlags(itemFlags.stream().map(XItemFlag::get).toArray(ItemFlag[]::new));
             }
-            meta.setUnbreakable(unbreakable);
+            if (VersionChecker.getInstance().atLeast("1_11_R1")) {
+                meta.setUnbreakable(unbreakable);
+            }
             item.setItemMeta(meta);
             if (skullTexture != null) {
                 item = SkullBuilder.applySkin(item, skullTexture);
