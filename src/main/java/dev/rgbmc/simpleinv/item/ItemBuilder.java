@@ -158,7 +158,7 @@ public class ItemBuilder {
                             .map(string -> variableHandler.apply(new VariableInfo(string, player)))
                             .map(Color::color)
                             .collect(Collectors.toList()));
-            if (VersionChecker.getInstance().atLeast("1.8")) {
+            if (VersionChecker.getInstance().atLeast("1_8_R1")) {
                 meta.addItemFlags(itemFlags.stream().map(XItemFlag::get).toArray(ItemFlag[]::new));
             }
             meta.setUnbreakable(unbreakable);

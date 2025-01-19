@@ -296,7 +296,7 @@ public class SimpleInventory {
             if (section.contains("lore")) {
                 itemBuilder.lore(section.getStringList("lore"));
             }
-            if (section.contains("flags") && VersionChecker.getInstance().atLeast("1.8")) {
+            if (section.contains("flags") && VersionChecker.getInstance().atLeast("1_8_R1")) {
                 for (String flag : section.getStringList("flags")) {
                     itemBuilder.flag(XItemFlag.valueOf(flag.toUpperCase()));
                 }
