@@ -1,11 +1,14 @@
 package dev.rgbmc.simpleinv.utils;
 
 public interface VersionChecker {
-    VersionChecker instance = new DefaultImpl();
     boolean atLeast(String version);
 
-    public static VersionChecker getInstance() {
-        return instance;
+    static VersionChecker getInstance() {
+        return VersionCheckerManager.getInstance();
+    }
+
+    static void setInstance(final VersionChecker instance) {
+        VersionCheckerManager.setInstance(instance);
     }
 
     class DefaultImpl implements VersionChecker {
