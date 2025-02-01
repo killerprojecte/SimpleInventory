@@ -150,8 +150,11 @@ public class ItemBuilder {
             if (displayName != null) {
                 meta.setDisplayName(Color.color(variableHandler.apply(new VariableInfo(displayName, player))));
             }
-            if (customModelData != Integer.MIN_VALUE && VersionChecker.getInstance().atLeast("1_14_R1")) {
-                meta.setCustomModelData(customModelData);
+            if (customModelData != Integer.MIN_VALUE) {
+                if (VersionChecker.getInstance().atLeast("1_14_R1")) {
+                    meta.setCustomModelData(customModelData);
+                }
+                System.err.println("[SimpleInventory] 无法构造CustomModelData: " + customModelData + " 当前服务器版本不兼容");
             }
             meta.setLore(
                     lore.stream()
