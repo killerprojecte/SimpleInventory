@@ -153,8 +153,9 @@ public class ItemBuilder {
             if (customModelData != Integer.MIN_VALUE) {
                 if (VersionChecker.getInstance().atLeast("1.14")) {
                     meta.setCustomModelData(customModelData);
+                } else {
+                    System.err.println("[SimpleInventory] 无法构造CustomModelData: " + customModelData + " 当前服务器版本不兼容");
                 }
-                System.err.println("[SimpleInventory] 无法构造CustomModelData: " + customModelData + " 当前服务器版本不兼容");
             }
             meta.setLore(
                     lore.stream()

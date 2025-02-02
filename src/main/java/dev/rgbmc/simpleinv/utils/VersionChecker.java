@@ -25,9 +25,11 @@ public interface VersionChecker {
             String[] split = requiredVersion.split("\\.");
             int[] versions = Arrays.stream(split).mapToInt(Integer::parseInt).toArray();
             for (int i = 0; i < versions.length; i++) {
-                if (serverVersions[i] > versions[i]) {
+                int required = versions[i];
+                int current = serverVersions[i];
+                if (current > required) {
                     return true;
-                } else if (serverVersions[i] < versions[i]) {
+                } else if (current < required) {
                     return false;
                 }
             }
