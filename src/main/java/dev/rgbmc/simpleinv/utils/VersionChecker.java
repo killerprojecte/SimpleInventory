@@ -25,11 +25,13 @@ public interface VersionChecker {
             String[] split = requiredVersion.split("\\.");
             int[] versions = Arrays.stream(split).mapToInt(Integer::parseInt).toArray();
             for (int i = 0; i < versions.length; i++) {
-                if (versions[i] > serverVersions[i]) {
+                if (serverVersions[i] > versions[i]) {
                     return true;
+                } else if (serverVersions[i] < versions[i]) {
+                    return false;
                 }
             }
-            return false;
+            return true;
         }
     }
 }
