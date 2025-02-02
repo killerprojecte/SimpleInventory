@@ -151,7 +151,7 @@ public class ItemBuilder {
                 meta.setDisplayName(Color.color(variableHandler.apply(new VariableInfo(displayName, player))));
             }
             if (customModelData != Integer.MIN_VALUE) {
-                if (VersionChecker.getInstance().atLeast("1_14_R1")) {
+                if (VersionChecker.getInstance().atLeast("1.14")) {
                     meta.setCustomModelData(customModelData);
                 }
                 System.err.println("[SimpleInventory] 无法构造CustomModelData: " + customModelData + " 当前服务器版本不兼容");
@@ -161,10 +161,10 @@ public class ItemBuilder {
                             .map(string -> variableHandler.apply(new VariableInfo(string, player)))
                             .map(Color::color)
                             .collect(Collectors.toList()));
-            if (VersionChecker.getInstance().atLeast("1_8_R1")) {
+            if (VersionChecker.getInstance().atLeast("1.8")) {
                 meta.addItemFlags(itemFlags.stream().map(XItemFlag::get).toArray(ItemFlag[]::new));
             }
-            if (VersionChecker.getInstance().atLeast("1_11_R1")) {
+            if (VersionChecker.getInstance().atLeast("1.11")) {
                 meta.setUnbreakable(unbreakable);
             }
             item.setItemMeta(meta);
