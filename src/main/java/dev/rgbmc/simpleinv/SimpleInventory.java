@@ -216,12 +216,28 @@ public class SimpleInventory {
         return this;
     }
 
-    public Inventory build() {
-        Inventory inventory = createInventory();
+    public Inventory buildOrRefresh(Player player) {
+        Inventory inventory = player.getOpenInventory().getTopInventory();
+        if (inventory.getHolder() != null && inventory.getHolder() instanceof SimpleInventoryHolder) {
+            SimpleInventoryHolder holder = (SimpleInventoryHolder) inventory.getHolder();
+            holder.setParent(this);
+            inventory.clear();
+            return build(inventory);
+        } else {
+            return build();
+        }
+    }
+
+    private Inventory build(Inventory inventory) {
         for (Map.Entry<Integer, ItemStack> itemStackEntry : itemMap.entrySet()) {
             inventory.setItem(itemStackEntry.getKey(), itemStackEntry.getValue().clone());
         }
         return inventory;
+    }
+
+    public Inventory build() {
+        Inventory inventory = createInventory();
+        return build(inventory);
     }
 
     private Inventory createInventory() {

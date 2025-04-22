@@ -6,12 +6,13 @@ import org.bukkit.inventory.InventoryHolder;
 
 public class SimpleInventoryHolder implements InventoryHolder {
 
-    private final SimpleInventory parent;
+    private SimpleInventory parent;
 
     public SimpleInventoryHolder(SimpleInventory parent) {
         this.parent = parent;
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public Inventory getInventory() {
         return parent.build();
@@ -19,5 +20,9 @@ public class SimpleInventoryHolder implements InventoryHolder {
 
     public SimpleInventory getParent() {
         return parent;
+    }
+
+    public void setParent(SimpleInventory parent) {
+        this.parent = parent;
     }
 }
